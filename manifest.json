@@ -1,0 +1,20 @@
+{
+  "name": "My Personal Document Vault",
+  "short_name": "Vault",
+  "description": "Encrypted offline-first personal and family document vault",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#071536",
+  "theme_color": "#009B83",
+  "icons": [
+    {
+      "src": "assets/branding/sanj_ai_logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
+

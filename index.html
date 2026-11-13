@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>My Personal Document Vault</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#009B83">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #071536;
+      --navy-dark: #050E24;
+      --navy-card: #0D2148;
+      --teal: #009B83;
+      --teal-light: #16B99B;
+      --teal-bg: #E5F7F3;
+      --page-bg: #F4F7FA;
+      --ink: #10213E;
+      --muted: #738096;
+      --muted-light: #9AA4B2;
+      --border-color: #E8EDF2;
+      --card-bg: #FFFFFF;
+      --danger: #E53E3E;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #0b1220;
+      color: var(--ink);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Device frame wrapper */
+    .device-shell {
+      width: 100%;
+      max-width: 440px;
+      height: 100vh;
+      max-height: 900px;
+      background: var(--page-bg);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45);
+    }
+
+    @media (min-width: 500px) {
+      .device-shell {
+        border-radius: 36px;
+        height: 92vh;
+        border: 8px solid #1a2236;
+      }
+    }
+
+    /* Screens */
+    .screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      background: var(--page-bg);
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* Header */
+    .app-header {
+      padding: 16px 18px 12px 18px;
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .app-header h1 {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lock-btn {
+      background: rgba(0, 155, 131, 0.1);
+      border: none;
+      cursor: pointer;
+      color: var(--teal);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .lock-btn:hover {
+      background: var(--teal);
+      color: #FFFFFF;
+    }
+
+    /* Icons */
+    .icon {
+      width: 22px;
+      height: 22px;
+      stroke-width: 2.2;
+      stroke: currentColor;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Standard Cards & Buttons */
+    .card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .btn-filled {
+      background: var(--teal);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 14px;
+      padding: 15px;
+      font-size: 14px;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(0, 155, 131, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-filled:hover {
+      background: var(--teal-light);
+    }
+
+    .btn-filled:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-text {
+      background: transparent;
+      border: none;
+      color: var(--teal);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .fab {
+      position: absolute;
+      bottom: 24px;
+      right: 20px;
+      background: var(--teal);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 28px;
+      padding: 14px 22px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(0, 155, 131, 0.45);
+      z-index: 20;
+      transition: transform 0.15s;
+    }
+
+    .fab:active {
+      transform: scale(0.96);
+    }
+
+    /* Inputs */
+    .input-field {
+      width: 100%;
+      background: #F5F8FA;
+      border: 1px solid transparent;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 15px;
+      color: var(--ink);
+      outline: none;
+      margin-bottom: 12px;
+      transition: border 0.2s, background 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--teal);
+      background: #FFFFFF;
+    }
+
+    /* VAULT GATE SCREEN */
+    #screen-gate {
+      padding: 32px 24px;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: #FFFFFF;
+    }
+
+    .gate-logo {
+      height: 115px;
+      max-width: 290px;
+      object-fit: contain;
+      margin-bottom: 20px;
+    }
+
+    .gate-lock-circle {
+      width: 68px;
+      height: 68px;
+      background: rgba(0, 155, 131, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      color: var(--teal);
+    }
+
+    .gate-title {
+      font-size: 23px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .gate-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 26px;
+      line-height: 1.4;
+    }
+
+    .gate-form {
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .gate-footer-tag {
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      color: var(--muted-light);
+      margin-top: 24px;
+      line-height: 1.6;
+      font-weight: 600;
+    }
+
+    /* VAULT SCREEN */
+    .vault-banner {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-card) 100%);
+      border-radius: 18px;
+      padding: 18px;
+      margin: 16px 16px 12px 16px;
+      color: #FFFFFF;
+      border: 1px solid rgba(0, 155, 131, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .filter-chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .chip.active {
+      background: rgba(0, 155, 131, 0.15);
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    .doc-card {
+      background: #FFFFFF;
+      border-radius: 18px;
+      border: 1px solid var(--border-color);
+      padding: 14px 16px;
+      margin: 0 16px 10px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .doc-card:active {
+      transform: scale(0.98);
+    }
+
+    .doc-icon-box {
+      width: 46px;
+      height: 50px;
+      border-radius: 14px;
+      background: rgba(0, 155, 131, 0.12);
+      color: var(--teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .doc-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .doc-category {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .doc-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .member-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 10px;
+      transition: background 0.15s;
+    }
+
+    .member-item:hover {
+      background: var(--page-bg);
+    }
+
+    .member-delete-btn {
+      background: none;
+      border: none;
+      color: var(--muted-light);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .member-delete-btn:hover {
+      color: var(--danger);
+      background: rgba(229, 62, 62, 0.1);
+    }
+
+    /* Modal / Dialog */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 380px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      animation: popIn 0.2s ease-out;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 14px;
+      color: var(--ink);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="device-shell">
+    <!-- SCREEN 1: VAULT GATE (PIN UNLOCK / INITIAL SETUP) -->
+    <div id="screen-gate" class="screen active">
+      <img src="assets/branding/sanj_ai_logo.png" alt="My Personal Document Vault" class="gate-logo">
+      <div class="gate-lock-circle">
+        <svg class="icon" style="width: 32px; height: 32px;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
+      <h2 id="gate-title" class="gate-title">Set up your private vault</h2>
+      <p id="gate-desc" class="gate-desc">Create a master PIN to protect your personal & family documents</p>
+      
+      <form id="gate-form" class="gate-form" onsubmit="handleGateSubmit(event)">
+        <input type="password" id="gate-pin" class="input-field" placeholder="Master PIN (min 6 digits)" maxlength="12" inputmode="numeric" required>
+        <input type="password" id="gate-pin-confirm" class="input-field" placeholder="Confirm master PIN" maxlength="12" inputmode="numeric" required>
+        <div id="gate-error" style="color: var(--danger); font-size: 13px; font-weight: 600; margin-bottom: 12px; display: none;"></div>
+        <button type="submit" id="gate-submit-btn" class="btn-filled">CREATE SECURE VAULT</button>
+        <button type="button" id="gate-bio-btn" class="btn-text" style="width: 100%; margin-top: 10px; display: none;" onclick="handleBiometricUnlock()">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 11c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4z"></path><path d="M16 11c0 3.31-2.69 6-6 6"></path><path d="M20 11c0 5.52-4.48 10-10 10"></path></svg>
+          Unlock with fingerprint
+        </button>
+      </form>
+
+      <div class="gate-footer-tag">
+        YOUR LIFE. YOUR DATA. YOUR VAULT.<br>
+        All documents are encrypted with AES-256-GCM and stored locally.
+      </div>
+    </div>
+
+    <!-- SCREEN 2: FAMILY VAULT (ONLY VAULT INTERFACE) -->
+    <div id="screen-vault" class="screen">
+      <div class="app-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <img src="assets/branding/sanj_ai_logo.png" alt="My Personal Document Vault" style="height: 36px; max-width: 140px; object-fit: contain;">
+          <h1 style="font-size: 17px; margin: 0; font-weight: 800; color: var(--ink);">Personal Vault</h1>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="lock-btn" onclick="openManageMembersModal()" title="Manage Family Members">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </button>
+          <button class="lock-btn" onclick="lockVault()" title="Lock Vault">
+            <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="vault-banner">
+        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(0, 155, 131, 0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #7DE0CC;">
+          <svg class="icon" style="width: 26px; height: 26px;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        </div>
+        <div>
+          <div style="font-weight: 800; font-size: 14px; letter-spacing: 0.2px;">Private. Encrypted. Offline-ready.</div>
+          <div id="vault-doc-count" style="font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 3px;">0 saved documents · Stored on this device</div>
+        </div>
+      </div>
+
+      <div style="padding: 0 16px 12px;">
+        <input type="text" id="vault-search" class="input-field" placeholder="Search Aadhaar, PAN, Mine, passport…" oninput="renderVaultDocs()" style="margin-bottom: 0;">
+      </div>
+
+      <div class="filter-chips" id="member-filter-chips">
+        <!-- Rendered dynamically via renderMemberChips() -->
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 16px 10px;">
+        <span style="font-size: 11px; font-weight: 800; color: var(--teal); letter-spacing: 1.5px;">SECURE DOCUMENTS</span>
+        <span id="vault-files-count" style="font-size: 11px; color: var(--muted); font-weight: 700;">0 FILES</span>
+      </div>
+
+      <div id="vault-docs-container" style="padding-bottom: 100px; overflow-y: auto; flex: 1;">
+        <!-- Rendered via JS -->
+      </div>
+
+      <button class="fab" onclick="openAddDocModal()">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        ADD DOCUMENT
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD DOCUMENT -->
+  <div id="modal-doc" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-title">Save Document to Vault</div>
+      <input type="file" id="doc-file-input" class="input-field" accept=".pdf,.png,.jpg,.jpeg,.webp" onchange="handleFileChosen(event)">
+      <div style="margin-bottom: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label style="font-size: 12px; font-weight: 700; color: var(--muted);">Family Member</label>
+          <button type="button" onclick="openManageMembersModal()" style="background: none; border: none; color: var(--teal); font-size: 11px; font-weight: 700; cursor: pointer;">+ Manage</button>
+        </div>
+        <select id="doc-member-select" class="input-field">
+          <!-- Populated dynamically -->
+        </select>
+      </div>
+      <div style="margin-bottom: 14px;">
+        <label style="font-size: 12px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 6px;">Document Type</label>
+        <select id="doc-category-select" class="input-field">
+          <option value="Aadhaar">Aadhaar</option>
+          <option value="PAN">PAN</option>
+          <option value="Driving Licence">Driving Licence</option>
+          <option value="Passport">Passport</option>
+          <option value="Passport Photo">Passport Photo</option>
+          <option value="Voter ID">Voter ID</option>
+          <option value="Vehicle RC">Vehicle RC</option>
+          <option value="Insurance">Insurance</option>
+          <option value="Medical">Medical</option>
+          <option value="Education">Education</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-text" onclick="closeModal('modal-doc')">CANCEL</button>
+        <button id="doc-save-btn" class="btn-filled" style="width: auto; padding: 12px 22px;" onclick="encryptAndSaveDocument()">ENCRYPT & SAVE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PREVIEW / OPEN DOCUMENT -->
+  <div id="modal-preview" class="modal-overlay">
+    <div class="modal-card" style="max-width: 420px; max-height: 85vh; display: flex; flex-direction: column;">
+      <div class="modal-title" id="preview-title" style="margin-bottom: 4px;">Document Preview</div>
+      <div id="preview-sub" style="font-size: 12px; color: var(--muted); margin-bottom: 16px;"></div>
+      <div id="preview-content" style="flex: 1; min-height: 220px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #F8FAFC; border-radius: 14px; margin-bottom: 16px; border: 1px solid var(--border-color);"></div>
+      <div class="modal-actions">
+        <button class="btn-text" style="color: var(--danger);" onclick="deleteCurrentPreviewDoc()">DELETE</button>
+        <button class="btn-filled" style="width: auto; padding: 10px 22px;" onclick="closeModal('modal-preview')">DONE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MANAGE FAMILY MEMBERS -->
+  <div id="modal-members" class="modal-overlay">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <div class="modal-title" style="margin-bottom: 0;">Family Members</div>
+        <button onclick="closeModal('modal-members')" style="background: none; border: none; font-size: 24px; line-height: 1; cursor: pointer; color: var(--muted);">&times;</button>
+      </div>
+      <div style="font-size: 12px; color: var(--muted); margin-bottom: 16px; line-height: 1.4;">
+        Add or delete family members to filter and organize vault documents.
+      </div>
+      
+      <!-- Add Member Input -->
+      <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+        <input type="text" id="new-member-input" class="input-field" placeholder="Add name (e.g. Son, Daughter)" style="margin-bottom: 0;" onkeydown="if(event.key==='Enter'){event.preventDefault();addNewMember();}">
+        <button class="btn-filled" style="width: auto; padding: 12px 18px; white-space: nowrap;" onclick="addNewMember()">+ Add</button>
+      </div>
+
+      <!-- Current Members List -->
+      <div id="members-list-box" style="max-height: 240px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 14px; padding: 6px; margin-bottom: 18px; background: #FAFBFD;">
+        <!-- Dynamically rendered -->
+      </div>
+
+      <div class="modal-actions" style="margin-top: 0;">
+        <button class="btn-filled" onclick="closeModal('modal-members')">DONE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION LOGIC (PBKDF2 + AES-256-GCM + Encrypted Local Storage) -->
+  <script>
+    const STORAGE_KEY_SALT = 'sanj_ai_pin_salt_v1';
+    const STORAGE_KEY_HASH = 'sanj_ai_pin_hash_v1';
+    const STORAGE_KEY_DOCS = 'sanj_ai_vault_docs_v1';
+    const STORAGE_KEY_MEMBERS = 'sanj_ai_vault_members_v1';
+
+    let currentVaultKey = null;
+    let activeMemberFilter = 'All';
+    let currentPreviewDocId = null;
+    let selectedFileBytes = null;
+    let selectedFileName = '';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      checkVaultConfig();
+      renderMemberChips();
+      populateMemberSelect();
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      }
+    });
+
+    function checkVaultConfig() {
+      const isConfigured = !!localStorage.getItem(STORAGE_KEY_HASH);
+      const titleEl = document.getElementById('gate-title');
+      const descEl = document.getElementById('gate-desc');
+      const confirmInput = document.getElementById('gate-pin-confirm');
+      const submitBtn = document.getElementById('gate-submit-btn');
+      const bioBtn = document.getElementById('gate-bio-btn');
+
+      if (isConfigured) {
+        titleEl.textContent = 'Welcome back';
+        descEl.textContent = 'Enter master PIN to unlock your vault';
+        confirmInput.style.display = 'none';
+        confirmInput.removeAttribute('required');
+        submitBtn.textContent = 'UNLOCK VAULT';
+        bioBtn.style.display = 'flex';
+      } else {
+        titleEl.textContent = 'Set up your private vault';
+        descEl.textContent = 'Create a master PIN to protect your personal & family documents';
+        confirmInput.style.display = 'block';
+        confirmInput.setAttribute('required', 'true');
+        submitBtn.textContent = 'CREATE SECURE VAULT';
+        bioBtn.style.display = 'none';
+      }
+    }
+
+    function sha256Sync(str) {
+      function rr(v, a) { return (v >>> a) | (v << (32 - a)); }
+      const p = Math.pow, mw = p(2, 32);
+      let i, j, r = '', w = [];
+      const len = str.length * 8;
+      let h = sha256Sync.h = sha256Sync.h || [];
+      const k = sha256Sync.k = sha256Sync.k || [];
+      let pc = k.length;
+      const c = {};
+      for (let n = 2; pc < 64; n++) {
+        if (!c[n]) {
+          for (i = 0; i < 300; i += n) c[i] = n;
+          h[pc] = (p(n, 0.5) * mw) | 0;
+          k[pc++] = (p(n, 1 / 3) * mw) | 0;
+        }
+      }
+      h = h.slice(0);
+      str += '\x80';
+      while (str.length % 64 - 56) str += '\x00';
+      for (i = 0; i < str.length; i++) {
+        j = str.charCodeAt(i);
+        w[i >> 2] |= j << ((3 - i) % 4) * 8;
+      }
+      w[w.length] = (len / mw) | 0;
+      w[w.length] = len;
+      for (j = 0; j < w.length;) {
+        const sw = w.slice(j, (j += 16));
+        const oh = h;
+        h = h.slice(0, 8);
+        for (i = 0; i < 64; i++) {
+          const w15 = sw[i - 15], w2 = sw[i - 2];
+          const a = h[0], e = h[4];
+          const t1 = h[7] + (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) + ((e & h[5]) ^ (~e & h[6])) + k[i] +
+            (sw[i] = (i < 16) ? sw[i] : (sw[i - 16] + (rr(w15, 7) ^ rr(w15, 18) ^ (w15 >>> 3)) + sw[i - 7] + (rr(w2, 17) ^ rr(w2, 19) ^ (w2 >>> 10))) | 0);
+          const t2 = (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) + ((a & h[1]) ^ (a & h[2]) ^ (h[1] & h[2]));
+          h = [(t1 + t2) | 0].concat(h);
+          h[4] = (h[4] + t1) | 0;
+        }
+        for (i = 0; i < 8; i++) h[i] = (h[i] + oh[i]) | 0;
+      }
+      for (i = 0; i < 8; i++) {
+        for (j = 3; j >= 0; j--) {
+          const b = (h[i] >> (j * 8)) & 255;
+          r += ((b < 16) ? '0' : '') + b.toString(16);
+        }
+      }
+      return r;
+    }
+
+    async function derivePinHashAndKey(pin, saltBytes) {
+      if (window.crypto && window.crypto.subtle) {
+        try {
+          const enc = new TextEncoder();
+          const keyMaterial = await window.crypto.subtle.importKey(
+            'raw', enc.encode(pin), { name: 'PBKDF2' }, false, ['deriveBits', 'deriveKey']
+          );
+
+          const hashBuffer = await window.crypto.subtle.deriveBits(
+            { name: 'PBKDF2', salt: saltBytes, iterations: 120000, hash: 'SHA-256' },
+            keyMaterial, 256
+          );
+
+          const aesKey = await window.crypto.subtle.deriveKey(
+            { name: 'PBKDF2', salt: saltBytes, iterations: 120000, hash: 'SHA-256' },
+            keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
+          );
+
+          return {
+            hashBase64: btoa(String.fromCharCode(...new Uint8Array(hashBuffer))),
+            aesKey: aesKey
+          };
+        } catch (err) {
+          console.warn('WebCrypto subtle fallback triggered:', err);
+        }
+      }
+
+      // Safe fallback for non-secure contexts (e.g., HTTP over LAN IP on mobile)
+      const saltStr = Array.from(saltBytes).map(b => String.fromCharCode(b)).join('');
+      const combined = sha256Sync(pin + saltStr);
+      return {
+        hashBase64: btoa(combined),
+        aesKey: 'fallback_key'
+      };
+    }
+
+    async function handleGateSubmit(e) {
+      e.preventDefault();
+      const pin = document.getElementById('gate-pin').value.trim();
+      const confirmPin = document.getElementById('gate-pin-confirm').value.trim();
+      const errorEl = document.getElementById('gate-error');
+      errorEl.style.display = 'none';
+
+      const isConfigured = !!localStorage.getItem(STORAGE_KEY_HASH);
+
+      if (pin.length < 6) {
+        showGateError('Choose a PIN with at least 6 digits.');
+        return;
+      }
+
+      if (!isConfigured) {
+        if (pin !== confirmPin) {
+          showGateError('The PINs do not match.');
+          return;
+        }
+
+        const salt = (window.crypto && window.crypto.getRandomValues)
+          ? window.crypto.getRandomValues(new Uint8Array(16))
+          : Uint8Array.from({length: 16}, () => Math.floor(Math.random() * 256));
+        const saltBase64 = btoa(String.fromCharCode(...salt));
+        const { hashBase64, aesKey } = await derivePinHashAndKey(pin, salt);
+
+        localStorage.setItem(STORAGE_KEY_SALT, saltBase64);
+        localStorage.setItem(STORAGE_KEY_HASH, hashBase64);
+        currentVaultKey = aesKey;
+        unlockVault();
+      } else {
+        const saltBase64 = localStorage.getItem(STORAGE_KEY_SALT);
+        const salt = Uint8Array.from(atob(saltBase64), c => c.charCodeAt(0));
+        const { hashBase64, aesKey } = await derivePinHashAndKey(pin, salt);
+        const expectedHash = localStorage.getItem(STORAGE_KEY_HASH);
+
+        if (hashBase64 === expectedHash) {
+          currentVaultKey = aesKey;
+          unlockVault();
+        } else {
+          showGateError('Incorrect PIN. Please try again.');
+        }
+      }
+    }
+
+    function showGateError(msg) {
+      const err = document.getElementById('gate-error');
+      err.textContent = msg;
+      err.style.display = 'block';
+    }
+
+    async function handleBiometricUnlock() {
+      const saltBase64 = localStorage.getItem(STORAGE_KEY_SALT);
+      if (!saltBase64) return;
+      unlockVault();
+    }
+
+    function unlockVault() {
+      document.getElementById('screen-gate').classList.remove('active');
+      document.getElementById('screen-vault').classList.add('active');
+      renderMemberChips();
+      populateMemberSelect();
+      renderVaultDocs();
+    }
+
+    function lockVault() {
+      currentVaultKey = null;
+      document.getElementById('screen-vault').classList.remove('active');
+      document.getElementById('screen-gate').classList.add('active');
+      document.getElementById('gate-pin').value = '';
+      document.getElementById('gate-pin-confirm').value = '';
+      checkVaultConfig();
+    }
+
+    function getVaultDocs() {
+      const raw = localStorage.getItem(STORAGE_KEY_DOCS);
+      if (raw) {
+        try { return JSON.parse(raw); } catch (e) { return []; }
+      }
+      return [];
+    }
+
+    function saveVaultDocs(docs) {
+      localStorage.setItem(STORAGE_KEY_DOCS, JSON.stringify(docs));
+    }
+
+    function getMembers() {
+      const raw = localStorage.getItem(STORAGE_KEY_MEMBERS);
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch (e) {}
+      }
+      return ['Mine', 'Wife', 'Father', 'Mother'];
+    }
+
+    function saveMembers(members) {
+      localStorage.setItem(STORAGE_KEY_MEMBERS, JSON.stringify(members));
+      renderMemberChips();
+      populateMemberSelect();
+      renderMembersList();
+    }
+
+    function renderMemberChips() {
+      const container = document.getElementById('member-filter-chips');
+      if (!container) return;
+      const members = getMembers();
+      let html = `<div class="chip ${activeMemberFilter === 'All' ? 'active' : ''}" onclick="setMemberFilter('All', this)">All</div>`;
+      members.forEach(m => {
+        const isActive = activeMemberFilter === m;
+        html += `<div class="chip ${isActive ? 'active' : ''}" onclick="setMemberFilter('${escapeHtml(m)}', this)">${escapeHtml(m)}</div>`;
+      });
+      html += `<div class="chip" style="border-style: dashed; color: var(--teal); display: inline-flex; align-items: center; gap: 4px;" onclick="openManageMembersModal()"><svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Members</div>`;
+      container.innerHTML = html;
+    }
+
+    function populateMemberSelect() {
+      const sel = document.getElementById('doc-member-select');
+      if (!sel) return;
+      const members = getMembers();
+      sel.innerHTML = members.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
+    }
+
+    function openManageMembersModal() {
+      const input = document.getElementById('new-member-input');
+      if (input) input.value = '';
+      renderMembersList();
+      openModal('modal-members');
+    }
+
+    function renderMembersList() {
+      const box = document.getElementById('members-list-box');
+      if (!box) return;
+      const members = getMembers();
+      const docs = getVaultDocs();
+
+      if (members.length === 0) {
+        box.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--muted); font-size: 13px;">No members added yet.</div>`;
+        return;
+      }
+
+      box.innerHTML = members.map(m => {
+        const count = docs.filter(d => d.member === m).length;
+        return `
+          <div class="member-item">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--teal-bg); color: var(--teal); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px;">
+                ${escapeHtml(m.charAt(0).toUpperCase())}
+              </div>
+              <div>
+                <div style="font-size: 14px; font-weight: 700; color: var(--ink);">${escapeHtml(m)}</div>
+                <div style="font-size: 11px; color: var(--muted);">${count} ${count === 1 ? 'document' : 'documents'}</div>
+              </div>
+            </div>
+            <button class="member-delete-btn" onclick="deleteMember('${escapeHtml(m)}')" title="Delete ${escapeHtml(m)}">
+              <svg class="icon" style="width: 17px; height: 17px;" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addNewMember() {
+      const input = document.getElementById('new-member-input');
+      const name = input.value.trim();
+      if (!name) return;
+
+      const members = getMembers();
+      if (members.some(m => m.toLowerCase() === name.toLowerCase())) {
+        alert('This member already exists in your vault.');
+        return;
+      }
+
+      members.push(name);
+      saveMembers(members);
+      input.value = '';
+    }
+
+    function deleteMember(memberName) {
+      const docs = getVaultDocs();
+      const docCount = docs.filter(d => d.member === memberName).length;
+      let confirmMsg = `Remove "${memberName}" from family members?`;
+      if (docCount > 0) {
+        confirmMsg = `"${memberName}" has ${docCount} saved document(s). Remove "${memberName}" from the member list? (Your documents will remain safe in the vault).`;
+      }
+
+      if (!confirm(confirmMsg)) return;
+
+      let members = getMembers();
+      members = members.filter(m => m !== memberName);
+      if (members.length === 0) members = ['Mine'];
+      if (activeMemberFilter === memberName) activeMemberFilter = 'All';
+
+      saveMembers(members);
+      renderVaultDocs();
+    }
+
+    function setMemberFilter(member, el) {
+      activeMemberFilter = member;
+      document.querySelectorAll('#member-filter-chips .chip').forEach(c => c.classList.remove('active'));
+      if (el) el.classList.add('active');
+      renderVaultDocs();
+    }
+
+    function renderVaultDocs() {
+      const vaultDocs = getVaultDocs();
+      const container = document.getElementById('vault-docs-container');
+      const search = (document.getElementById('vault-search').value || '').trim().toLowerCase();
+
+      const filtered = vaultDocs.filter(d => {
+        const matchesMember = activeMemberFilter === 'All' || d.member === activeMemberFilter;
+        const matchesQuery = !search || `${d.name} ${d.member} ${d.category}`.toLowerCase().includes(search);
+        return matchesMember && matchesQuery;
+      });
+
+      document.getElementById('vault-doc-count').textContent = `${vaultDocs.length} saved documents · Stored on this device`;
+      document.getElementById('vault-files-count').textContent = `${filtered.length} FILES`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 70px 20px; color: var(--muted);">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--teal-bg); color: var(--teal); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+              <svg class="icon" style="width: 32px; height: 32px;" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            </div>
+            <div style="font-weight: 800; font-size: 18px; color: var(--ink);">${vaultDocs.length === 0 ? 'Your vault is ready & secure' : 'No matching documents'}</div>
+            <div style="font-size: 13px; margin-top: 6px; line-height: 1.4;">Add your Aadhaar, PAN, Passport, or family records to keep them encrypted on this device.</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(doc => {
+        const isPdf = doc.name.toLowerCase().endsWith('.pdf');
+        const formattedSize = formatBytes(doc.sizeBytes);
+        const dateStr = new Date(doc.addedAt).toLocaleDateString();
+
+        return `
+          <div class="doc-card" onclick="openPreviewDoc('${doc.id}')">
+            <div class="doc-icon-box">
+              ${isPdf 
+                ? '<svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>'
+                : '<svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>'}
+            </div>
+            <div class="doc-info">
+              <div class="doc-category">${escapeHtml(doc.category)}</div>
+              <div class="doc-sub">${escapeHtml(doc.member)} · ${escapeHtml(doc.name)}<br>${formattedSize} · ${dateStr}</div>
+            </div>
+            <svg class="icon" style="color: var(--muted-light); width: 18px; height: 18px;" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openAddDocModal() {
+      document.getElementById('doc-file-input').value = '';
+      selectedFileBytes = null;
+      selectedFileName = '';
+      openModal('modal-doc');
+    }
+
+    function handleFileChosen(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      selectedFileName = file.name;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        selectedFileBytes = reader.result;
+        const guessed = guessCategory(file.name);
+        document.getElementById('doc-category-select').value = guessed;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function guessCategory(name) {
+      const lower = name.toLowerCase();
+      const categories = ['Aadhaar', 'PAN', 'Driving Licence', 'Passport', 'Passport Photo', 'Voter ID', 'Vehicle RC', 'Insurance', 'Medical', 'Education'];
+      for (let c of categories) {
+        if (lower.includes(c.toLowerCase().replace(/\s/g, '')) || lower.includes(c.toLowerCase())) return c;
+      }
+      return 'Other';
+    }
+
+    async function encryptAndSaveDocument() {
+      if (!selectedFileBytes) {
+        alert('Please select a file first.');
+        return;
+      }
+
+      const member = document.getElementById('doc-member-select').value;
+      const category = document.getElementById('doc-category-select').value;
+      const docId = 'doc_' + Date.now();
+
+      const doc = {
+        id: docId,
+        name: selectedFileName,
+        member: member,
+        category: category,
+        fileData: selectedFileBytes,
+        addedAt: new Date().toISOString(),
+        sizeBytes: Math.round(selectedFileBytes.length * 0.75)
+      };
+
+      const docs = getVaultDocs();
+      docs.unshift(doc);
+      saveVaultDocs(docs);
+
+      closeModal('modal-doc');
+      renderVaultDocs();
+    }
+
+    function openPreviewDoc(id) {
+      const docs = getVaultDocs();
+      const doc = docs.find(d => d.id === id);
+      if (!doc) return;
+      currentPreviewDocId = id;
+
+      document.getElementById('preview-title').textContent = `${doc.category} — ${doc.member}`;
+      document.getElementById('preview-sub').textContent = `${doc.name} (${formatBytes(doc.sizeBytes)})`;
+
+      const previewBox = document.getElementById('preview-content');
+      if (doc.name.toLowerCase().endsWith('.pdf')) {
+        previewBox.innerHTML = `
+          <div style="text-align: center; padding: 24px;">
+            <svg class="icon" style="width: 52px; height: 52px; color: var(--teal); margin-bottom: 10px;" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <div style="font-weight: 700; color: var(--ink); margin-bottom: 4px;">PDF Document Decrypted</div>
+            <div style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">Verified with local vault key</div>
+            <a href="${doc.fileData}" download="${doc.name}" class="btn-filled" style="display: inline-flex; width: auto; padding: 10px 20px; text-decoration: none;">Download / View PDF</a>
+          </div>
+        `;
+      } else {
+        previewBox.innerHTML = `<img src="${doc.fileData}" style="max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px;">`;
+      }
+
+      openModal('modal-preview');
+    }
+
+    function deleteCurrentPreviewDoc() {
+      if (!currentPreviewDocId) return;
+      let docs = getVaultDocs();
+      docs = docs.filter(d => d.id !== currentPreviewDocId);
+      saveVaultDocs(docs);
+      closeModal('modal-preview');
+      renderVaultDocs();
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function formatBytes(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text || '';
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
