@@ -1,0 +1,56 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Flutter APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Generate Android Runner Files
+        run: flutter create --platforms=android --org=com.sanj.vault .
+
+      - name: Configure FlutterFragmentActivity for local_auth
+        run: |
+          python3 -c "
+          import os
+          for root, dirs, files in os.walk('android/app/src/main'):
+              for f in files:
+                  if f.startswith('MainActivity'):
+                      p = os.path.join(root, f)
+                      c = open(p).read()
+                      c = c.replace('FlutterActivity', 'FlutterFragmentActivity')
+                      open(p, 'w').write(c)
+                      print('Patched', p)
+          "
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build Release APK
+        run: flutter build apk --release
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Personal-Document-Vault-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
