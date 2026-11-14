@@ -127,7 +127,7 @@ class _VaultScreenState extends State<VaultScreen> {
     return showDialog<(String, String)>(
       context: context,
       builder: (context) => StatefulBuilder(builder: (context, setDialog) => AlertDialog(
-        backgroundColor: const Colors.white,
+        backgroundColor: Colors.white,
         title: const Text('Save document'),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           Text(filename, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF64748B))),
@@ -178,7 +178,7 @@ class _VaultScreenState extends State<VaultScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Colors.white,
+        backgroundColor: Colors.white,
         title: const Text('Delete document?'),
         content: Text('Permanently remove ${doc.name} from this device?'),
         actions: [
@@ -337,7 +337,7 @@ class _VaultScreenState extends State<VaultScreen> {
               hintText: 'Search Aadhaar, PAN, Mine, passport…',
               prefixIcon: const Icon(Icons.search, color: gold),
               suffixIcon: _search.text.isEmpty ? null : IconButton(onPressed: () { _search.clear(); setState(() {}); }, icon: const Icon(Icons.close)),
-              filled: true, fillColor: const Colors.white,
+              filled: true, fillColor: Colors.white,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
             ),
           ),
@@ -377,7 +377,7 @@ class _VaultScreenState extends State<VaultScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _busy ? null : () => showModalBottomSheet<void>(
           context: context,
-          backgroundColor: const Colors.white,
+          backgroundColor: Colors.white,
           builder: (context) => SafeArea(child: Padding(
             padding: const EdgeInsets.all(20),
             child: Wrap(spacing: 12, runSpacing: 12, children: [

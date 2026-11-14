@@ -29,10 +29,17 @@ jobs:
       - name: Generate Android Runner Files
         run: flutter create --platforms=android --org=com.sanj.vault .
 
-      - name: Configure FlutterFragmentActivity for local_auth
+      - name: Configure minSdkVersion and FlutterFragmentActivity
         run: |
           python3 -c "
-          import os
+          import os, re
+          gradle_path = 'android/app/build.gradle'
+          if os.path.exists(gradle_path):
+              c = open(gradle_path).read()
+              c = re.sub(r'minSdk(Version)?\s*=?\s*flutter\.minSdkVersion', 'minSdkVersion 23', c)
+              open(gradle_path, 'w').write(c)
+              print('Updated minSdkVersion to 23')
+          
           for root, dirs, files in os.walk('android/app/src/main'):
               for f in files:
                   if f.startswith('MainActivity'):
