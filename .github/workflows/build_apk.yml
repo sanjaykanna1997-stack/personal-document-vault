@@ -51,11 +51,14 @@ jobs:
                       p = os.path.join(root, f)
                       c = open(p).read()
                       orig = c
-                      c = re.sub(r'minSdk(Version)?\s*=?\s*flutter\.minSdkVersion', 'minSdkVersion 23', c)
-                      c = re.sub(r'minSdk\s*=\s*flutter\.minSdkVersion', 'minSdk = 23', c)
+                      if 'flutter.minSdkVersion' in c:
+                          c = c.replace('flutter.minSdkVersion', '23')
                       if c != orig:
                           open(p, 'w').write(c)
-                          print('Patched minSdk in', p)
+                          print('Replaced flutter.minSdkVersion with 23 in', p)
+                          for line in c.splitlines():
+                              if 'minSdk' in line:
+                                  print('  Verified:', line.strip())
 
           # 3. Patch MainActivity to FlutterFragmentActivity
           for root, dirs, files in os.walk('android/app/src/main'):
