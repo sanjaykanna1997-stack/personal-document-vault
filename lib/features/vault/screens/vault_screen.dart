@@ -11,6 +11,8 @@ import '../models/vault_document.dart';
 import '../services/vault_service.dart';
 import 'vault_gate.dart';
 
+const gold = Color(0xFF009B83);
+
 class VaultScreen extends StatefulWidget {
   const VaultScreen({super.key});
 
@@ -19,7 +21,6 @@ class VaultScreen extends StatefulWidget {
 }
 
 class _VaultScreenState extends State<VaultScreen> {
-  static const gold = Color(0xFF009B83);
   List<String> members = ['Mine', 'Wife', 'Father', 'Mother'];
   static const categories = [
     'Aadhaar', 'PAN', 'Driving Licence', 'Passport', 'Passport Photo',

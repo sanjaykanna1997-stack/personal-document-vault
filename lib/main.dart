@@ -21,7 +21,7 @@ class SanjAiApp extends StatelessWidget {
       appBarTheme: const AppBarTheme(backgroundColor: page, foregroundColor: ink, elevation: 0, centerTitle: false),
       cardTheme: CardThemeData(color: Colors.white, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: Color(0xFFE8EDF2)))),
       inputDecorationTheme: InputDecorationTheme(filled: true, fillColor: const Color(0xFFF5F8FA), border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none), contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15)),
-      navigationBarTheme: NavigationBarThemeData(backgroundColor: Colors.white, indicatorColor: teal.withOpacity(.12), labelTextStyle: MaterialStateProperty.all(const TextStyle(fontSize: 11, fontWeight: FontWeight.w600))),
+      navigationBarTheme: NavigationBarThemeData(backgroundColor: Colors.white, indicatorColor: teal.withOpacity(.12), labelTextStyle: WidgetStateProperty.all(const TextStyle(fontSize: 11, fontWeight: FontWeight.w600))),
     ),
     home: const VaultGate(),
   );

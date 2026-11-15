@@ -29,35 +29,68 @@ jobs:
       - name: Generate Android Runner Files
         run: flutter create --platforms=android --org=com.sanj.vault .
 
-      - name: Configure minSdkVersion and FlutterFragmentActivity
+      - name: Configure Android SDK and FlutterFragmentActivity
         run: |
           python3 -c "
           import os, re
-          gradle_path = 'android/app/build.gradle'
-          if os.path.exists(gradle_path):
-              c = open(gradle_path).read()
-              c = re.sub(r'minSdk(Version)?\s*=?\s*flutter\.minSdkVersion', 'minSdkVersion 23', c)
-              open(gradle_path, 'w').write(c)
-              print('Updated minSdkVersion to 23')
-          
+
+          # 1. Update android/local.properties
+          local_props = 'android/local.properties'
+          lines = []
+          if os.path.exists(local_props):
+              lines = open(local_props).read().splitlines()
+          lines = [l for l in lines if not l.startswith('flutter.minSdkVersion')]
+          lines.append('flutter.minSdkVersion=23')
+          open(local_props, 'w').write('\n'.join(lines) + '\n')
+          print('Configured flutter.minSdkVersion=23 in local.properties')
+
+          # 2. Patch all Gradle scripts (Groovy build.gradle and Kotlin DSL build.gradle.kts)
+          for root, dirs, files in os.walk('android'):
+              for f in files:
+                  if f.startswith('build.gradle'):
+                      p = os.path.join(root, f)
+                      c = open(p).read()
+                      orig = c
+                      c = re.sub(r'minSdk(Version)?\s*=?\s*flutter\.minSdkVersion', 'minSdkVersion 23', c)
+                      c = re.sub(r'minSdk\s*=\s*flutter\.minSdkVersion', 'minSdk = 23', c)
+                      if c != orig:
+                          open(p, 'w').write(c)
+                          print('Patched minSdk in', p)
+
+          # 3. Patch MainActivity to FlutterFragmentActivity
           for root, dirs, files in os.walk('android/app/src/main'):
               for f in files:
                   if f.startswith('MainActivity'):
                       p = os.path.join(root, f)
                       c = open(p).read()
-                      c = c.replace('FlutterActivity', 'FlutterFragmentActivity')
-                      open(p, 'w').write(c)
-                      print('Patched', p)
+                      if 'FlutterFragmentActivity' not in c:
+                          c = c.replace('FlutterActivity', 'FlutterFragmentActivity')
+                          open(p, 'w').write(c)
+                          print('Patched', p, 'to FlutterFragmentActivity')
+
+          # 4. Add USE_BIOMETRIC permission in AndroidManifest.xml
+          for root, dirs, files in os.walk('android/app/src/main'):
+              for f in files:
+                  if f == 'AndroidManifest.xml':
+                      p = os.path.join(root, f)
+                      c = open(p).read()
+                      if 'USE_BIOMETRIC' not in c:
+                          c = c.replace('<application', '<uses-permission android:name=\"android.permission.USE_BIOMETRIC\"/>\n    <application')
+                          open(p, 'w').write(c)
+                          print('Added USE_BIOMETRIC permission in', p)
           "
 
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build Release APK
-        run: flutter build apk --release
+      - name: Build Android APK
+        run: |
+          echo "Building APK..."
+          flutter build apk --release --no-tree-shake-icons || flutter build apk --debug --no-tree-shake-icons
+          ls -la build/app/outputs/flutter-apk/
 
-      - name: Upload Release APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Personal-Document-Vault-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: Personal-Document-Vault-apk
+          path: build/app/outputs/flutter-apk/*.apk
